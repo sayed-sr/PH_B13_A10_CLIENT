@@ -1,65 +1,216 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { Button, Card, Spinner, Input } from "@heroui/react";
+import { useRouter } from "next/navigation";
+import { Search, ShieldCheck, Zap, Clock, MapPin, ArrowRight } from "lucide-react";
+import axios from "axios";
+
+export default function HomePage() {
+  const router = useRouter();
+  const [advTickets, setAdvTickets] = useState([]);
+  const [latestTickets, setLatestTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Search local inputs
+  const [fromLoc, setFromLoc] = useState("");
+  const [toLoc, setToLoc] = useState("");
+
+  useEffect(() => {
+    async function fetchHomeData() {
+      try {
+        const advRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/advertised`);
+        const latestRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?limit=8`);
+        setAdvTickets(advRes.data || []);
+        setLatestTickets(latestRes.data.tickets || []);
+      } catch (err) {
+        console.error("Home loading failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHomeData();
+  }, []);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    router.push(`/tickets?from=${encodeURIComponent(fromLoc)}&to=${encodeURIComponent(toLoc)}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Spinner size="lg" label="Loading TicketBari..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
+    <div className="space-y-20 pb-20">
+      {/* Enhanced Hero Banner Section with Theme Matching Image Graphic Layout */}
+      <section className="relative min-h-[60vh] flex items-center bg-slate-900 text-white overflow-hidden">
+        {/* Background Image Overlay Layer */}
+        <div className="absolute inset-0 z-0 opacity-40 mix-blend-multiply bg-cover bg-center" 
+             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1920&q=80')" }}>
+        </div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-blue-900/90 via-indigo-950/80 to-transparent"></div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full text-left space-y-6">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 backdrop-blur-sm uppercase tracking-wider">
+            Direct Operator Bookings
+          </span>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-none max-w-3xl">
+            Your Premium Gateway to <span className="text-blue-400 bg-clip-text">Effortless Journey</span> Tickets
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="max-w-xl text-base md:text-lg text-slate-300 leading-relaxed">
+            Reserve verified seats instantly across high-speed rail lines, intercity luxury coaches, marine launches, and regional domestic flights.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+          {/* Quick Search Hub Widget */}
+          {/* <form onSubmit={handleSearchSubmit} className="max-w-4xl bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl grid grid-cols-1 md:grid-cols-3 gap-4 items-center border border-white/20 mt-8">
+            <Input
+              placeholder="From Location (e.g. Dhaka)"
+              value={fromLoc}
+              onChange={(e) => setFromLoc(e.target.value)}
+              className="text-slate-900"
+              variant="flat"
+              radius="lg"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <Input
+              placeholder="To Location (e.g. Cox's Bazar)"
+              value={toLoc}
+              onChange={(e) => setToLoc(e.target.value)}
+              className="text-slate-900"
+              variant="flat"
+              radius="lg"
+            />
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-xl flex items-center justify-center gap-2 shadow-lg transition-all duration-200">
+              <Search size={18} /> Search Routes
+            </Button>
+          </form> */}
         </div>
-      </main>
+      </section>
+
+      {/* Advertisement Section (Requirement 3b - Exactly 6) */}
+      {advTickets.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-slate-800">Featured Deals</h2>
+            <p className="text-sm text-slate-500 mt-1">Top-tier verified transit routes handpicked by administration.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {advTickets.slice(0, 6).map((ticket) => (
+              <TicketCard key={ticket._id} ticket={ticket} router={router} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Latest Tickets Section (Requirement 3c - 6 to 8 cards) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-slate-800">Recently Added Tickets</h2>
+          <p className="text-sm text-slate-500 mt-1">Fresh trip updates across multiple premium intercity networks.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {latestTickets.map((ticket) => (
+            <TicketCard key={ticket._id} ticket={ticket} router={router} />
+          ))}
+        </div>
+      </section>
+
+      {/* Extra Section 1: Popular Routes */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-slate-50 py-12 rounded-3xl border border-slate-100">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-slate-800">Popular Routes</h2>
+          <p className="text-sm text-slate-500 mt-1">The most-traveled paths prioritized by daily commuters.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { from: "Dhaka", to: "Cox's Bazar", type: "Bus" },
+            { from: "Dhaka", to: "Chittagong", type: "Train" },
+            { from: "Dhaka", to: "Sylhet", type: "Flight" },
+            { from: "Dhaka", to: "Barisal", type: "Launch" },
+          ].map((route, i) => (
+            <Card key={i} className="p-5 hover:shadow-md transition border border-slate-100 cursor-pointer bg-white rounded-xl" onClick={() => router.push(`/tickets?from=${route.from}&to=${route.to}`)}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">{route.type}</p>
+                  <p className="font-semibold text-slate-800 mt-1">{route.from} to {route.to}</p>
+                </div>
+                <ArrowRight size={16} className="text-slate-400" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Extra Section 2: Why Choose Us */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
+        <div>
+          <h2 className="text-3xl font-bold text-slate-800">Why Choose TicketBari?</h2>
+          <p className="text-sm text-slate-500 mt-1">Building digital systems with integrity, performance, and transparency.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="space-y-3 flex flex-col items-center">
+            <div className="bg-blue-100 p-4 rounded-2xl text-blue-600"><ShieldCheck size={32} /></div>
+            <h3 className="text-xl font-bold text-slate-800">Fully Anti-Fraud Monitoring</h3>
+            <p className="text-sm text-slate-500 max-w-xs">Admin filters prevent faulty listings, flagging black market activity instantly.</p>
+          </div>
+          <div className="space-y-3 flex flex-col items-center">
+            <div className="bg-blue-100 p-4 rounded-2xl text-blue-600"><Zap size={32} /></div>
+            <h3 className="text-xl font-bold text-slate-800">Instant Pay Outs</h3>
+            <p className="text-sm text-slate-500 max-w-xs">Secure credit card settlements via Stripe automation pipelines.</p>
+          </div>
+          <div className="space-y-3 flex flex-col items-center">
+            <div className="bg-blue-100 p-4 rounded-2xl text-blue-600"><Clock size={32} /></div>
+            <h3 className="text-xl font-bold text-slate-800">Real-time Countdown Tracking</h3>
+            <p className="text-sm text-slate-500 max-w-xs">Automatic lockouts ensure you never buy a ticket for a past departure.</p>
+          </div>
+        </div>
+      </section>
     </div>
+  );
+}
+
+// Reusable standard Ticket Card to retain identical height across all loops
+function TicketCard({ ticket, router }) {
+  return (
+    <Card className="flex flex-col h-full overflow-hidden border border-slate-100 shadow-sm bg-white rounded-2xl">
+      <div className="h-48 w-full overflow-hidden relative bg-slate-100">
+        <img src={ticket.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600"} alt={ticket.title} className="w-full h-full object-cover" />
+        <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+          {ticket.transportType}
+        </span>
+      </div>
+      <div className="p-6 flex flex-col flex-grow justify-between gap-4">
+        <div className="space-y-2">
+          <h3 className="font-bold text-xl text-slate-800 line-clamp-1">{ticket.title}</h3>
+          <div className="flex items-center text-slate-500 text-xs gap-1 font-medium">
+            <MapPin size={14} className="text-slate-400" />
+            <span>{ticket.from}</span>
+            <ArrowRight size={12} className="mx-0.5" />
+            <span>{ticket.to}</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5 pt-2">
+            {ticket.perks?.map((perk, i) => (
+              <span key={i} className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                {perk}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <div className="flex justify-between items-baseline border-t border-slate-100 pt-3">
+            <span className="text-xs text-slate-400 font-medium">Available Inventory: <strong className="text-slate-700">{ticket.quantity}</strong></span>
+            <p className="text-xl font-extrabold text-blue-600">${ticket.price}<span className="text-xs text-slate-400 font-normal">/unit</span></p>
+          </div>
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl" onClick={() => router.push(`/tickets/${ticket._id}`)}>
+            See Details
+          </Button>
+        </div>
+      </div>
+    </Card>
   );
 }
