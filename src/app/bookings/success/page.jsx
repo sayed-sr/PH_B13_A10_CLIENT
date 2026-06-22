@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "@heroui/react";
 import { CheckCircle2 } from "lucide-react";
 import axios from "axios";
 
-export default function PaymentSuccessPage() {
+// 1. Move the state and payment verification logic into an inner sub-component
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [statusMessage, setStatusMessage] = useState("Verifying payment transaction status...");
@@ -18,7 +19,7 @@ export default function PaymentSuccessPage() {
 
     if (!bookingId) {
       setStatusMessage("Invalid parameters. Redirecting back to workspace...");
-      setTimeout(() => router.push("/dashboard"), 3000);
+      setTimeout(() => router.push("/dashboard/user"), 3000);
       return;
     }
 
@@ -41,15 +42,15 @@ export default function PaymentSuccessPage() {
 
         setStatusMessage("Payment Confirmed! Updating your workspace manifest...");
         
-        // 2. Redirect the user smoothly back to the dashboard workspace page
+        // 2. Redirect the user smoothly back to the dashboard workspace page safely
         setTimeout(() => {
-          router.push("/dashboard"); 
+          router.push("/dashboard/user"); 
         }, 2000);
 
       } catch (err) {
         console.error("Backend state correction fault:", err);
         setStatusMessage("Sync error, but payment went through. Returning to panel...");
-        setTimeout(() => router.push("/dashboard"), 3000);
+        setTimeout(() => router.push("/dashboard/user"), 3000);
       }
     };
 
@@ -57,17 +58,35 @@ export default function PaymentSuccessPage() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-md w-full text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center">
-          <CheckCircle2 size={40} />
-        </div>
-        <h1 className="text-xl font-black text-slate-800">Processing Payment</h1>
-        <p className="text-sm font-semibold text-slate-500">{statusMessage}</p>
-        <div className="pt-2 flex justify-center">
-          <Spinner size="sm" />
-        </div>
+    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-md w-full text-center space-y-4">
+      <div className="mx-auto w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center">
+        <CheckCircle2 size={40} />
       </div>
+      <h1 className="text-xl font-black text-slate-800">Processing Payment</h1>
+      <p className="text-sm font-semibold text-slate-500">{statusMessage}</p>
+      <div className="pt-2 flex justify-center">
+        <Spinner size="sm" />
+      </div>
+    </div>
+  );
+}
+
+// 2. Export the main page wrapper cleanly protected inside a Suspense boundary
+export default function PaymentSuccessPage() {
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+      <Suspense fallback={
+        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-md w-full text-center space-y-4">
+          <p className="text-sm font-semibold text-slate-500 animate-pulse">
+            Initializing verification engines...
+          </p>
+          <div className="pt-2 flex justify-center">
+            <Spinner size="sm" />
+          </div>
+        </div>
+      }>
+        <PaymentSuccessContent />
+      </Suspense>
     </div>
   );
 }

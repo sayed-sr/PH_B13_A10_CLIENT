@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { Input, Button, Card, Spinner, Pagination } from "@heroui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, MapPin, Calendar, Search } from "lucide-react";
 import axios from "axios";
 
-export default function AllTicketsPage() {
+// 1. Move the complete filtering, data fetching, and grid UI layout into an inner sub-component
+function TicketsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -142,7 +143,6 @@ export default function AllTicketsPage() {
         </div>
       )}
 
-      {/* 🔮 Integrated cleanly based on the HeroUI layout snippet */}
       {totalPages > 1 && (
         <div className="flex justify-center pt-10">
           <Pagination className="justify-center">
@@ -182,5 +182,18 @@ export default function AllTicketsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// 2. Export the primary page component wrapped safely inside a Suspense boundary
+export default function AllTicketsPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center justify-center space-y-4">
+        <Spinner label="Loading ticket listing interface..." color="primary" />
+      </div>
+    }>
+      <TicketsPageContent />
+    </Suspense>
   );
 }

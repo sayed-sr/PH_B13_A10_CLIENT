@@ -1,6 +1,12 @@
 import { createAuthClient } from "better-auth/react";
 
+// Safely format the Vercel system URL string if it exists
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+  return "http://localhost:3000";
+};
+
 export const { signIn, signUp, signOut, useSession } = createAuthClient({
-    // Hardcoding to port 3000 ensures it never tries to hit the Express backend on 5000
-    baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+    baseURL: getBaseUrl(),
 });
