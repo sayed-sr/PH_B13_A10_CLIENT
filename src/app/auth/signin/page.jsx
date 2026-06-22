@@ -148,16 +148,16 @@ function SigninFormContent() {
         </Button>
       </form>
 
-      <div className="relative flex py-6 items-center">
+      {/* <div className="relative flex py-6 items-center">
         <div className="flex-grow border-t border-slate-200"></div>
         <span className="flex-shrink mx-4 text-slate-400 text-xs font-semibold tracking-wider">OR</span>
         <div className="flex-grow border-t border-slate-200"></div>
-      </div>
+      </div> */}
 
-      <Button onPress={handleGoogleLogin} variant="bordered" className="w-full border-slate-300 font-semibold text-slate-700 rounded-xl h-12 flex items-center justify-center gap-2 hover:bg-slate-50">
+      {/* <Button onPress={handleGoogleLogin} variant="bordered" className="w-full border-slate-300 font-semibold text-slate-700 rounded-xl h-12 flex items-center justify-center gap-2 hover:bg-slate-50">
         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
         Continue with Google
-      </Button>
+      </Button> */}
 
       <div className="text-center pt-6 text-sm text-slate-500">
         New to TicketBari?{" "}

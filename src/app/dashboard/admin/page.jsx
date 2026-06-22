@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
-import { Card, Button, Switch, Spinner } from "@heroui/react";
+import { Card, Button, Spinner } from "@heroui/react";
 import { User, ShieldAlert, Users, Radio } from "lucide-react";
 import axios from "axios";
 
@@ -82,13 +82,14 @@ export default function AdminDashboard() {
     }
   };
 
-  // Advertise Ticket Toggles (Max 6 limit enforced via frontend rule layout)
+  // Advertise Ticket Toggles with Toast Enforcements
   const handleAdvertiseToggle = async (ticketItem) => {
     const totalAdvertised = tickets.filter(t => t.isAdvertised).length;
     const targetState = !ticketItem.isAdvertised;
 
+    // Trigger explicit instructions when hitting operational constraint rules
     if (targetState && totalAdvertised >= 6) {
-      alert("Operational constraint failure: Admin cannot advertise more than 6 tickets at a time.");
+      alert("🚨 Operational Limit Reached!\nYou cannot broadcast more than 6 tickets simultaneously. Please turn off another broadcast card first to open a premium slot for this one.");
       return;
     }
 
@@ -232,28 +233,24 @@ export default function AdminDashboard() {
                           )}
                         </td>
                         <td className="p-4 flex justify-center gap-2">
-                          {/* Rule A: Promote anyone to admin except active admins */}
                           {u.role !== "admin" && (
                             <Button size="sm" onClick={() => handleUserUpdate(u._id, { role: "admin" })} className="bg-blue-600 text-white font-bold rounded-lg text-xs h-8">
                               Make Admin
                             </Button>
                           )}
-
-                          {/* Rule B: FIXED - Now always shows "Approve Vendor" for normal users so you can re-promote them */}
-                          {u.role === "user" && (
+                          
+                          {/* CRITICAL MODIFICATION: Only display this if user has requested vendor privileges (vendorVerification === "pending") */}
+                          {u.role === "user" && u.vendorVerification === "pending" && (
                             <Button size="sm" variant="flat" color="primary" onClick={() => handleUserUpdate(u._id, { role: "vendor", vendorVerification: "approved" })} className="font-bold rounded-lg text-xs h-8">
                               Approve Vendor
                             </Button>
                           )}
 
-                          {/* Rule C: Convert an active Vendor back into a Standard User */}
                           {u.role === "vendor" && (
                             <Button size="sm" variant="flat" color="warning" onClick={() => handleUserUpdate(u._id, { role: "user", vendorVerification: "none" })} className="font-bold rounded-lg text-xs h-8">
                               Make Normal User
                             </Button>
                           )}
-
-                          {/* Rule D: Flag approved active vendors as fraudulent profiles */}
                           {u.role === "vendor" && !u.isFraud && (
                             <Button size="sm" color="danger" onClick={() => handleUserUpdate(u._id, { isFraud: true })} className="font-bold rounded-lg text-xs h-8">
                               Mark as Fraud
@@ -306,7 +303,18 @@ export default function AdminDashboard() {
                         <td className="p-4 text-xs font-semibold text-blue-600 uppercase tracking-wide">{t.transportType}</td>
                         <td className="p-4 text-center">
                           <div className="inline-flex items-center justify-center">
-                            <Switch isSelected={t.isAdvertised || false} onChange={() => handleAdvertiseToggle(t)} size="sm" color="success" />
+                            <button
+                              type="button"
+                              onClick={() => handleAdvertiseToggle(t)}
+                              className={`flex items-center justify-center gap-1.5 font-bold text-xs rounded-xl px-4 h-9 min-w-[120px] transition-all duration-200 border shadow-sm ${
+                                t.isAdvertised 
+                                  ? "bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white" 
+                                  : "bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700"
+                              }`}
+                            >
+                              <Radio size={14} className={t.isAdvertised ? "animate-pulse" : ""} />
+                              {t.isAdvertised ? "Broadcasting" : "Broadcast"}
+                            </button>
                           </div>
                         </td>
                       </tr>

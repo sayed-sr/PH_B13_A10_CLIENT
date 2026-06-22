@@ -12,7 +12,7 @@ export default function AdvertisedTickets() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        // Fetches from the advertised route created in Part 2
+        // Fetches from the advertised backend pipeline route
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/advertised`);
         setTickets(res.data);
       } catch (err) {
@@ -25,15 +25,20 @@ export default function AdvertisedTickets() {
   }, []);
 
   if (loading) return <div className="flex justify-center py-10"><Spinner size="lg" /></div>;
-  if (tickets.length === 0) return null;
+
+  // Filter out tickets that are not explicitly actively flagged for broadcasting
+  const activeBroadcastTickets = tickets.filter(ticket => ticket.isAdvertised);
+
+  // If no tickets have been pushed to broadcast, cleanly unmount and hide the section completely
+  if (activeBroadcastTickets.length === 0) return null;
 
   return (
-    <section>
+    <section className="py-6">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-slate-800">Featured Journeys</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tickets.map(ticket => (
+        {activeBroadcastTickets.map(ticket => (
           <TicketCard key={ticket._id} ticket={ticket} />
         ))}
       </div>

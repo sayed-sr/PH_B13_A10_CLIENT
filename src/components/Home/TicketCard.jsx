@@ -1,71 +1,77 @@
 "use client";
 import { Card, Button } from "@heroui/react";
-import Link from "next/link";
-import { Bus, Train, Ship, Plane, MapPin, Calendar, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client"; 
+import { ArrowRight, MapPin } from "lucide-react";
 
 export default function TicketCard({ ticket }) {
-  // Dynamic icon based on transport type
-  const getIcon = (type) => {
-    switch (type?.toLowerCase()) {
-      case 'train': return <Train size={18} />;
-      case 'launch': return <Ship size={18} />;
-      case 'flight': return <Plane size={18} />;
-      default: return <Bus size={18} />;
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleDetailsNavigation = () => {
+    // Standard secure block
+    if (!session || !session.user) {
+      alert("🔒 Authentication Required!\nYou must be logged in to view ticket details.");
+      window.location.href = "/auth/signin";
+      return;
     }
+
+    router.push(`/tickets/${ticket._id}`);
   };
 
   return (
-    <Card className="flex flex-col h-full bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-all rounded-2xl overflow-hidden">
-      {/* Image Section */}
-      <div className="relative h-48 w-full overflow-hidden">
+    <Card className="flex flex-col h-full overflow-hidden border border-slate-100 shadow-sm bg-white rounded-2xl">
+      {/* Image Header */}
+      <div className="h-48 w-full overflow-hidden relative bg-slate-100">
         <img 
-          src={ticket.image || "https://placehold.co/600x400/png"} 
+          src={ticket.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600"} 
           alt={ticket.title} 
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover" 
         />
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-slate-800 flex items-center gap-1.5 shadow-sm">
-          {getIcon(ticket.transportType)} {ticket.transportType}
-        </div>
-        <div className="absolute bottom-3 right-3 bg-blue-600 px-3 py-1.5 rounded-lg text-white font-bold shadow-sm">
-          ${ticket.price}
-        </div>
+        <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+          {ticket.transportType}
+        </span>
       </div>
 
-      {/* Content Section */}
-      <div className="p-5 flex flex-col flex-grow">
-        <h3 className="text-lg font-bold text-slate-800 mb-3 line-clamp-1">{ticket.title}</h3>
-        
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center text-slate-600 text-sm">
-             <MapPin size={16} className="mr-2 text-blue-500" />
-             <span className="truncate">{ticket.from} <span className="font-bold mx-1">→</span> {ticket.to}</span>
+      {/* Main Body */}
+      <div className="p-6 flex flex-col flex-grow justify-between gap-4">
+        <div className="space-y-2">
+          <h3 className="font-bold text-xl text-slate-800 line-clamp-1">{ticket.title}</h3>
+          
+          <div className="flex items-center text-slate-500 text-xs gap-1 font-medium">
+            <MapPin size={14} className="text-slate-400" />
+            <span>{ticket.from}</span>
+            <ArrowRight size={12} className="mx-0.5" />
+            <span>{ticket.to}</span>
           </div>
-          <div className="flex items-center text-slate-600 text-sm">
-             <Calendar size={16} className="mr-2 text-blue-500" />
-             {new Date(ticket.departureDate).toLocaleString()}
-          </div>
-          <div className="flex items-center text-slate-600 text-sm">
-             <Users size={16} className="mr-2 text-blue-500" />
-             {ticket.quantity} Tickets Left
+
+          {/* Perks Row */}
+          <div className="flex flex-wrap gap-1.5 pt-2">
+            {ticket.perks?.map((perk, i) => (
+              <span key={i} className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                {perk}
+              </span>
+            ))}
           </div>
         </div>
 
-        {/* Perks */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          {ticket.perks?.slice(0,3).map((perk, i) => (
-            <span key={i} className="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-medium border border-slate-200">
-              {perk}
+        {/* Pricing and Action Footer */}
+        <div className="space-y-3 pt-2">
+          <div className="flex justify-between items-baseline border-t border-slate-100 pt-3">
+            <span className="text-xs text-slate-400 font-medium">
+              Available Inventory: <strong className="text-slate-700">{ticket.quantity}</strong>
             </span>
-          ))}
-        </div>
-
-        {/* Spacer to push button to bottom */}
-        <div className="mt-auto">
-          <Link href={`/tickets/${ticket._id}`} className="block w-full">
-            <Button className="w-full bg-slate-900 text-white font-semibold hover:bg-blue-600 transition-colors rounded-xl h-11">
-              See Details
-            </Button>
-          </Link>
+            <p className="text-xl font-extrabold text-blue-600">
+              ${ticket.price}<span className="text-xs text-slate-400 font-normal">/unit</span>
+            </p>
+          </div>
+          
+          <Button 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl" 
+            onClick={handleDetailsNavigation}
+          >
+            See Details
+          </Button>
         </div>
       </div>
     </Card>

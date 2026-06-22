@@ -4,12 +4,14 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import { Input, Button, Card, Spinner, Pagination } from "@heroui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, MapPin, Calendar, Search } from "lucide-react";
+import { useSession } from "@/lib/auth-client"; 
 import axios from "axios";
 
 // 1. Move the complete filtering, data fetching, and grid UI layout into an inner sub-component
 function TicketsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +58,16 @@ function TicketsPageContent() {
   useEffect(() => {
     triggerSearchFetch();
   }, [page, transportType, priceSort, triggerSearchFetch]);
+
+  const handleDetailsNavigation = (ticketId) => {
+    // If not authenticated, instantly push to relative login route layout cleanly
+    if (!session || !session.user) {
+      router.push("/auth/signin");
+      return;
+    }
+
+    router.push(`/tickets/${ticketId}`);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
@@ -133,7 +145,10 @@ function TicketsPageContent() {
                     <span className="text-xs text-slate-400">Seats remaining: <strong className="text-slate-700">{ticket.quantity}</strong></span>
                     <p className="text-lg font-bold text-blue-600">${ticket.price}</p>
                   </div>
-                  <Button className="w-full bg-blue-600 text-white font-bold rounded-xl" onClick={() => router.push(`/tickets/${ticket._id}`)}>
+                  <Button 
+                    className="w-full bg-blue-600 text-white font-bold rounded-xl" 
+                    onClick={() => handleDetailsNavigation(ticket._id)}
+                  >
                     See Details
                   </Button>
                 </div>
