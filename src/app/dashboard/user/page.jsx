@@ -8,14 +8,14 @@ import axios from "axios";
 
 export default function UserDashboardPage() {
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState("profile"); // profile | bookings | history
+  const [activeTab, setActiveTab] = useState("profile"); 
   
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const paymentProcessedRef = useRef(false);
 
-  // Load Bookings for current user
+  
   const fetchBookings = useCallback(async () => {
     if (!session?.user?.email) return;
     setLoading(true);
@@ -32,7 +32,7 @@ export default function UserDashboardPage() {
     }
   }, [session?.user?.email]);
 
-  // Handle Stripe Redirection URL Verification
+  
   useEffect(() => {
     const handleUrlPaymentVerification = async () => {
       if (typeof window === "undefined" || paymentProcessedRef.current) return;
@@ -44,7 +44,7 @@ export default function UserDashboardPage() {
       const quantity = params.get("qty");
       const sessionId = params.get("session_id");
 
-      // Check if we just returned from a successful Stripe checkout session
+      
       if (isSuccess === "true" && bookingId && sessionId) {
         paymentProcessedRef.current = true; // Prevents double processing in React Strict Mode
         setVerifyingPayment(true);
@@ -53,7 +53,7 @@ export default function UserDashboardPage() {
         try {
           const token = localStorage.getItem("token") || localStorage.getItem("access_token");
           
-          // Securely updates your MongoDB database via index.js /verify-payment
+          
           const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/verify-payment`, {
             bookingId,
             ticketId,
@@ -71,7 +71,7 @@ export default function UserDashboardPage() {
           alert("Payment went through, but we couldn't sync the transaction history. Please refresh.");
         } finally {
           setVerifyingPayment(false);
-          // Clean the ugly URL parameters up from the browser address bar safely
+        
           window.history.replaceState({}, document.title, window.location.pathname);
           fetchBookings();
         }
@@ -103,26 +103,26 @@ export default function UserDashboardPage() {
     }
   };
 
-  // Handle Stripe Redirection with Live Inventory Verification
+  
   const handlePaymentRedirect = async (booking) => {
     try {
-      // 1. Fetch live tickets status from backend to verify inventory availability
+      
       const token = localStorage.getItem("token") || localStorage.getItem("access_token");
       const ticketsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Find this specific ticket item within your current system listings
+  
       const liveTicket = ticketsRes.data?.tickets?.find(t => t._id === booking.ticketId);
       const requestedQty = parseInt(booking.quantity) || 1;
 
-      // 2. Client-side blocking condition if available inventory limits are violated
+  
       if (liveTicket && liveTicket.quantity < requestedQty) {
         alert(`Booking failed. There are only ${liveTicket.quantity} seats remaining for this trip, but you requested ${requestedQty}. Please cancel this booking request and reserve a valid amount of seats.`);
         return;
       }
 
-      // 3. Proceed to Stripe if inventory conditions pass
+   
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || ""}/create-checkout-session`, {
         bookingId: booking._id,
         title: booking.title,
@@ -148,7 +148,7 @@ export default function UserDashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-800">
-      {/* Sidebar Control Panel */}
+   
       <div className="w-64 bg-white border-r border-slate-200 p-6 space-y-6 flex flex-col">
         <div>
           <h2 className="text-xl font-black text-blue-600 tracking-tight">TicketBari</h2>
@@ -183,7 +183,7 @@ export default function UserDashboardPage() {
         </nav>
       </div>
 
-      {/* Main Container Layout */}
+  
       <div className="flex-1 p-10 max-w-7xl mx-auto space-y-6">
         
         {verifyingPayment && (
@@ -296,11 +296,19 @@ function BookingCard({ booking, onPay, onDelete }) {
   const [countdown, setCountdown] = useState("");
   const [expired, setExpired] = useState(false);
 
+
+
+
+
   useEffect(() => {
     if (booking.status === "rejected" || booking.status === "paid") {
       setCountdown("");
       return;
     }
+
+
+
+
 
     const timer = setInterval(() => {
       const departure = new Date(booking.departureTime).getTime();
@@ -319,6 +327,8 @@ function BookingCard({ booking, onPay, onDelete }) {
       }
     }, 1000);
 
+
+
     return () => clearInterval(timer);
   }, [booking]);
 
@@ -328,6 +338,9 @@ function BookingCard({ booking, onPay, onDelete }) {
     rejected: "bg-rose-50 text-rose-700 border-rose-200",
     paid: "bg-green-50 text-green-700 border-green-200"
   };
+
+
+
 
   return (
     <Card className="flex flex-col h-full border border-slate-100 bg-white shadow-sm rounded-2xl overflow-hidden">
@@ -350,6 +363,10 @@ function BookingCard({ booking, onPay, onDelete }) {
           <p className="text-[11px] text-slate-400 font-medium">Departure: {new Date(booking.departureTime).toLocaleString()}</p>
         </div>
 
+
+
+
+
         <div className="space-y-2 pt-3 border-t border-slate-100 text-xs">
           <div className="flex justify-between">
             <span className="text-slate-400">Reserved Slots:</span>
@@ -359,6 +376,10 @@ function BookingCard({ booking, onPay, onDelete }) {
             <span className="text-slate-400">Total Price Aggregation:</span>
             <p className="text-base font-bold text-blue-600">${booking.totalPrice}</p>
           </div>
+
+
+
+
 
           {booking.status !== "rejected" && booking.status !== "paid" && countdown && (
             <div className="flex items-center gap-1.5 text-[11px] font-mono text-amber-600 bg-amber-50/50 p-2 rounded-lg border border-amber-100 mt-1">
