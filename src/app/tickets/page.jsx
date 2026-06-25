@@ -7,7 +7,7 @@ import { ArrowRight, MapPin, Calendar, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client"; 
 import axios from "axios";
 
-// 1. Move the complete filtering, data fetching, and grid UI layout into an inner sub-component
+
 function TicketsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,7 +60,7 @@ function TicketsPageContent() {
   }, [page, transportType, priceSort, triggerSearchFetch]);
 
   const handleDetailsNavigation = (ticketId) => {
-    // If not authenticated, instantly push to relative login route layout cleanly
+    
     if (!session || !session.user) {
       router.push("/auth/signin");
       return;
@@ -200,7 +200,7 @@ function TicketsPageContent() {
   );
 }
 
-// 2. Export the primary page component wrapped safely inside a Suspense boundary
+
 export default function AllTicketsPage() {
   return (
     <Suspense fallback={
