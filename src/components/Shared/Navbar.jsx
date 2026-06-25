@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
-import { Bus, User, LogOut, ChevronDown } from "lucide-react";
+import { Bus, User, LogOut, ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@heroui/react";
 
 export default function Navbar() {
@@ -12,8 +12,9 @@ export default function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
     
-    // Dropdown state for user profile
+    // UI Interaction States
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     // Close dropdown when clicking outside
@@ -27,13 +28,19 @@ export default function Navbar() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Close mobile menu automatically on navigation change
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
+
     const handleLogout = async () => {
         await signOut();
         setIsDropdownOpen(false);
+        setIsMobileMenuOpen(false);
         router.push("/"); 
     };
 
-    // Determine dashboard link based on user role (defaults to user if no role is set)
+    // Determine dashboard link based on user role
     const dashboardLink = session?.user?.role === "vendor" 
         ? "/dashboard/vendor" 
         : session?.user?.role === "admin" 
@@ -45,15 +52,25 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     
-                    {/* Left: Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="bg-blue-600 p-2 rounded-xl group-hover:bg-blue-700 transition">
-                            <Bus className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-bold text-xl text-slate-800 tracking-tight">TicketBari</span>
-                    </Link>
+                    {/* Left: Logo and Mobile Toggle Button */}
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 md:hidden transition"
+                            aria-label="Toggle navigation menu"
+                        >
+                            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                        </button>
 
-                    {/* Middle: Navigation Links */}
+                        <Link href="/" className="flex items-center gap-2 group">
+                            <div className="bg-blue-600 p-2 rounded-xl group-hover:bg-blue-700 transition">
+                                <Bus className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="font-bold text-xl text-slate-800 tracking-tight">TicketBari</span>
+                        </Link>
+                    </div>
+
+                    {/* Middle: Navigation Links (Desktop Viewport Only) */}
                     <div className="hidden md:flex space-x-8">
                         <Link 
                             href="/" 
@@ -67,7 +84,6 @@ export default function Navbar() {
                         >
                             All Tickets
                         </Link>
-                        {/* Dashboard is Private (Only shows if user is logged in) */}
                         {session?.user && (
                             <Link 
                                 href={dashboardLink} 
@@ -78,12 +94,11 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Right: Authentication / User Profile */}
+                    {/* Right: Authentication Action Buttons */}
                     <div className="flex items-center gap-4">
                         {isPending ? (
                             <div className="h-10 w-24 bg-slate-100 rounded-xl animate-pulse"></div>
                         ) : session?.user ? (
-                            // Logged In: Beautiful User Dropdown
                             <div className="relative" ref={dropdownRef}>
                                 <button 
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -98,7 +113,6 @@ export default function Navbar() {
                                     <ChevronDown size={16} className="text-slate-400" />
                                 </button>
 
-                                {/* Dropdown Menu (Strictly: My Profile -> Logout) */}
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 animate-in fade-in slide-in-from-top-2">
                                         <div className="px-4 py-3 border-b border-slate-100">
@@ -130,7 +144,6 @@ export default function Navbar() {
                                 )}
                             </div>
                         ) : (
-                            // Logged Out: Explicit wrapper strategy implemented here
                             <div className="flex gap-2">
                                 <Link href="/auth/signin" passHref>
                                     <Button variant="light" className="font-medium">
@@ -148,6 +161,32 @@ export default function Navbar() {
 
                 </div>
             </div>
+
+            {/* Mobile Dropdown Drawer Menu Component */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden bg-white border-t border-slate-100 px-4 pt-3 pb-4 space-y-2 shadow-inner animate-in slide-in-from-top duration-200">
+                    <Link 
+                        href="/" 
+                        className={`block px-3 py-2.5 rounded-xl text-base font-semibold transition-colors ${pathname === '/' ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                    >
+                        Home
+                    </Link>
+                    <Link 
+                        href="/tickets" 
+                        className={`block px-3 py-2.5 rounded-xl text-base font-semibold transition-colors ${pathname === '/tickets' ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                    >
+                        All Tickets
+                    </Link>
+                    {session?.user && (
+                        <Link 
+                            href={dashboardLink} 
+                            className={`block px-3 py-2.5 rounded-xl text-base font-semibold transition-colors ${pathname.includes('/dashboard') ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                        >
+                            Dashboard
+                        </Link>
+                    )}
+                </div>
+            )}
         </nav>
     );
 }
