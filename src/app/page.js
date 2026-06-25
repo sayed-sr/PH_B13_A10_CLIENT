@@ -14,7 +14,7 @@ export default function HomePage() {
   const [latestTickets, setLatestTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Search local inputs
+
   const [fromLoc, setFromLoc] = useState("");
   const [toLoc, setToLoc] = useState("");
 
@@ -49,7 +49,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-20 pb-20">
-      {/* Enhanced Hero Banner Section */}
+      
       <section className="relative min-h-[60vh] flex items-center bg-slate-900 text-white overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-40 mix-blend-multiply bg-cover bg-center" 
              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1920&q=80')" }}>
@@ -69,7 +69,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Advertisement Section - Passed session parameter safely downward */}
+    
       {advTickets.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
@@ -84,7 +84,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Latest Tickets Section - Passed session parameter safely downward */}
+      
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-800">Recently Added Tickets</h2>
@@ -97,7 +97,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Popular Routes Section */}
+   
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-slate-50 py-12 rounded-3xl border border-slate-100">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-slate-800">Popular Routes</h2>
@@ -123,7 +123,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
+     
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
         <div>
           <h2 className="text-3xl font-bold text-slate-800">Why Choose TicketBari?</h2>
@@ -151,17 +151,17 @@ export default function HomePage() {
   );
 }
 
-// 3. Fixed inner sub-component intercepting session user objects natively
+
 function TicketCard({ ticket, router, session }) {
   const handleDetailsNavigation = () => {
-    // Clean Verification Rule: If session data or user doesn't exist, redirect them
+   
     if (!session || !session.user) {
       alert("🔒 Authentication Required!\nYou must be logged in to view ticket details.");
       window.location.href = "/auth/signin";
       return;
     }
 
-    // Pass: User is confirmed, navigate smoothly
+    
     router.push(`/tickets/${ticket._id}`);
   };
 
