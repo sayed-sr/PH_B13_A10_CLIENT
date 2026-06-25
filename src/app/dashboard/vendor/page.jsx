@@ -17,7 +17,7 @@ export default function VendorDashboard() {
   const [loading, setLoading] = useState(false);
   const [realUserRole, setRealUserRole] = useState("user"); 
 
-  // Add Ticket Form States
+
   const [title, setTitle] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -28,14 +28,14 @@ export default function VendorDashboard() {
   const [perks, setPerks] = useState([]);
   const [imageUrl, setImageUrl] = useState(""); 
 
-  // Update state modal context
+
   const [editingTicket, setEditingTicket] = useState(null);
 
   const getAuthToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("access_token");
   };
 
-  // Wrapped inside useCallback to prevent extraneous hook cycle re-renders
+ 
   const fetchDashboardData = useCallback(async (silent = false) => {
     if (!session?.user?.email) return;
     if (!silent) setLoading(true);
@@ -50,7 +50,7 @@ export default function VendorDashboard() {
         setRealUserRole(matchedUser.role); 
       }
 
-      // Only fetch the rest of the workspace variables if the database registers them as a vendor
+      
       if (matchedUser && matchedUser.role === "vendor") {
         const ticketsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?limit=1000`, config);
         const allTickets = ticketsRes.data.tickets || ticketsRes.data || [];
@@ -71,14 +71,14 @@ export default function VendorDashboard() {
     }
   }, [session?.user?.email]);
 
-  // Initial Boot-up Synced state sequence 
+
   useEffect(() => {
     if (session?.user?.email) {
       fetchDashboardData(false);
     }
   }, [session?.user?.email, fetchDashboardData]);
 
-  // Tab switch listener fetches background datasets without triggering a blank blocking screen
+ 
   useEffect(() => {
     if (session?.user?.email && realUserRole === "vendor") {
       fetchDashboardData(true);
@@ -118,7 +118,10 @@ export default function VendorDashboard() {
     try {
       const token = getAuthToken();
       
-      // Clean up inputs just in case any empty strings are hanging around before sending to the database
+      
+
+
+
       const payload = {
         ...editingTicket,
         price: parseFloat(editingTicket.price) || 0,
@@ -136,6 +139,10 @@ export default function VendorDashboard() {
       alert("Failed to modify ticket details.");
     }
   };
+
+
+
+
 
   const handleDeleteTicket = async (id) => {
     if (!confirm("Are you sure you want to delete this ticket?")) return;
@@ -199,7 +206,7 @@ export default function VendorDashboard() {
         <Button onClick={() => setActiveTab("e")} className={`justify-start gap-3 h-12 font-bold rounded-xl ${activeTab === "e" ? "bg-blue-600 text-white" : "bg-transparent text-slate-600 hover:bg-slate-100"}`}><BarChart3 size={18} /> e) Revenue Overview</Button>
       </aside>
 
-      {/* Main Panel Viewport */}
+     
       <main className="flex-1 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
         
         {/* a) Vendor Profile section */}
@@ -219,7 +226,7 @@ export default function VendorDashboard() {
           </div>
         )}
 
-        {/* b) Add Ticket Form section */}
+
         {activeTab === "b" && (
           <form onSubmit={handleAddTicketSubmit} className="space-y-5 max-w-2xl">
             <h2 className="text-2xl font-bold text-slate-800">b) Add Ticket</h2>
@@ -285,7 +292,7 @@ export default function VendorDashboard() {
           </form>
         )}
 
-        {/* c) My Added Tickets grid display */}
+       
         {activeTab === "c" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800">c) My Added Tickets</h2>
@@ -329,7 +336,7 @@ export default function VendorDashboard() {
           </div>
         )}
 
-        {/* d) Requested Bookings table layout */}
+        
         {activeTab === "d" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800">d) Requested Bookings</h2>
@@ -377,7 +384,7 @@ export default function VendorDashboard() {
           </div>
         )}
 
-        {/* e) Revenue Overview panel section */}
+      
         {activeTab === "e" && (() => {
           const paidBookings = requestedBookings.filter(b => b.status === "paid");
           const totalSoldQuantity = paidBookings.reduce((acc, curr) => acc + (parseInt(curr.quantity || curr.bookingQuantity) || 0), 0);
@@ -428,7 +435,7 @@ export default function VendorDashboard() {
           );
         })()}
 
-        {/* Global Update Modal */}
+       
         {editingTicket && (
           <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <form onSubmit={handleUpdateTicket} className="bg-white max-w-md w-full p-6 rounded-2xl border space-y-4 shadow-2xl">
