@@ -9,8 +9,7 @@
 ## Project Purpose
 **TicketBari** is a premium, real-time transportation routing and ticket purchasing gateway optimized for local ecosystem management. Built as a high-performance single-page web app, it enables transit operators to list available tickets while enforcing automated fraud prevention mechanisms. It serves as a unified digital platform bridging everyday transit clients, verification administrators, and certified regional travel vendors under one secure routing architecture.
 
-## Deployment Live URL
-- **Production Hub:** [https://ticketbari.vercel.app](https://ticketbari.vercel.app)
+
 
 ---
 
