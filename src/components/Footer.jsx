@@ -6,10 +6,10 @@ import { Bus } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
-      {/* 4 columns on desktop, stacked on mobile layout */}
+   
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         
-        {/* Column 1: Logo + Short description */}
+       
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-white">
             <div className="bg-blue-600 p-2 rounded-xl">
@@ -22,7 +22,7 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Column 2: Quick Links */}
+        
         <div>
           <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Quick Links</h4>
           <ul className="space-y-2.5 text-sm">
@@ -33,7 +33,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 3: Contact Info */}
         <div>
           <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Contact Info</h4>
           <ul className="space-y-2.5 text-sm text-slate-400">
@@ -47,7 +46,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 4: Payment Methods */}
+        
         <div>
           <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Payment Methods</h4>
           <p className="text-sm text-slate-400 mb-3">We support verified checkout routes globally:</p>
@@ -62,7 +61,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar Requirement */}
       <div className="border-t border-slate-800/60 bg-slate-950/40 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© 2026 TicketBari. All rights reserved.</p>
