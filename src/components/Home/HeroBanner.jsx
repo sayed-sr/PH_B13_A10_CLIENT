@@ -6,7 +6,7 @@ import { MapPin } from "lucide-react";
 export default function HeroBanner() {
   return (
     <div className="relative w-full h-[600px] flex items-center justify-center overflow-hidden">
-      {/* Background Image (Travel Theme) */}
+      
       <div 
         className="absolute inset-0 bg-cover bg-center z-0" 
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop')" }}

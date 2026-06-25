@@ -9,7 +9,7 @@ export default function TicketCard({ ticket }) {
   const { data: session } = useSession();
 
   const handleDetailsNavigation = () => {
-    // Standard secure block
+    
     if (!session || !session.user) {
       alert("🔒 Authentication Required!\nYou must be logged in to view ticket details.");
       window.location.href = "/auth/signin";
@@ -21,7 +21,7 @@ export default function TicketCard({ ticket }) {
 
   return (
     <Card className="flex flex-col h-full overflow-hidden border border-slate-100 shadow-sm bg-white rounded-2xl">
-      {/* Image Header */}
+     
       <div className="h-48 w-full overflow-hidden relative bg-slate-100">
         <img 
           src={ticket.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600"} 
@@ -33,7 +33,7 @@ export default function TicketCard({ ticket }) {
         </span>
       </div>
 
-      {/* Main Body */}
+     
       <div className="p-6 flex flex-col flex-grow justify-between gap-4">
         <div className="space-y-2">
           <h3 className="font-bold text-xl text-slate-800 line-clamp-1">{ticket.title}</h3>
@@ -45,7 +45,7 @@ export default function TicketCard({ ticket }) {
             <span>{ticket.to}</span>
           </div>
 
-          {/* Perks Row */}
+          
           <div className="flex flex-wrap gap-1.5 pt-2">
             {ticket.perks?.map((perk, i) => (
               <span key={i} className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
@@ -55,7 +55,7 @@ export default function TicketCard({ ticket }) {
           </div>
         </div>
 
-        {/* Pricing and Action Footer */}
+        
         <div className="space-y-3 pt-2">
           <div className="flex justify-between items-baseline border-t border-slate-100 pt-3">
             <span className="text-xs text-slate-400 font-medium">

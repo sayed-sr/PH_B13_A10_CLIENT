@@ -12,7 +12,7 @@ export default function AdvertisedTickets() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        // Fetches from the advertised backend pipeline route
+       
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/advertised`);
         setTickets(res.data);
       } catch (err) {
@@ -26,10 +26,10 @@ export default function AdvertisedTickets() {
 
   if (loading) return <div className="flex justify-center py-10"><Spinner size="lg" /></div>;
 
-  // Filter out tickets that are not explicitly actively flagged for broadcasting
+
   const activeBroadcastTickets = tickets.filter(ticket => ticket.isAdvertised);
 
-  // If no tickets have been pushed to broadcast, cleanly unmount and hide the section completely
+  
   if (activeBroadcastTickets.length === 0) return null;
 
   return (

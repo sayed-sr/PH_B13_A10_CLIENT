@@ -2,7 +2,7 @@ import { Card } from "@heroui/react";
 import { MapPin } from "lucide-react";
 
 export default function PopularRoutes() {
-  // Static attractive data for extra homepage sections
+ 
   const routes = [
     { from: "Dhaka", to: "Cox's Bazar", price: "Starts at $15", img: "https://images.unsplash.com/photo-1600010996841-397aeb889076?w=600&auto=format&fit=crop" },
     { from: "Dhaka", to: "Sylhet", price: "Starts at $12", img: "https://images.unsplash.com/photo-1623940173266-9a259c636f0e?w=600&auto=format&fit=crop" },
