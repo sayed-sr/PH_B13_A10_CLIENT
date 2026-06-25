@@ -19,14 +19,14 @@ export default function TicketDetailsPage({ params: paramsPromise }) {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
 
-  // Countdown State Hooks
+
   const [countdownText, setCountdownText] = useState("");
   const [isPast, setIsPast] = useState(false);
 
   useEffect(() => {
     async function loadTicket() {
       try {
-        // FIX: Requesting a large limit so your ticket is not missing due to backend pagination limits
+        
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?status=approved&limit=1000`);
         const allTickets = res.data.tickets || res.data || [];
         const individual = allTickets.find(t => t._id === id);
@@ -153,7 +153,7 @@ export default function TicketDetailsPage({ params: paramsPromise }) {
         </Button>
       </Card>
 
-      {/* Import-Safe Custom Modal Overlay */}
+      
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
