@@ -10,12 +10,12 @@ export default function AdminDashboard() {
   const { data: session, isPending } = useSession();
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Core Data Arrays
+  
   const [tickets, setTickets] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Helper function to extract token from local storage keys accurately
+  
   const getExpressToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("access_token");
   };
@@ -32,11 +32,14 @@ export default function AdminDashboard() {
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      // 1. Fetch tickets (Get all statuses without page limitation for full admin control desk)
+     
       const ticketsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?limit=100`, config);
       setTickets(ticketsRes.data.tickets || []);
 
-      // 2. Fetch users using custom Express verifyToken middleware protection path
+
+
+
+    
       const usersRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users`, config);
       setUsers(usersRes.data || []);
     } catch (err) {
@@ -52,7 +55,11 @@ export default function AdminDashboard() {
     }
   }, [session, activeTab]);
 
-  // Manage Ticket Approvals & Rejections Engine
+
+
+
+
+
   const handleTicketStatusChange = async (id, statusValue) => {
     try {
       const token = getExpressToken();
@@ -67,7 +74,12 @@ export default function AdminDashboard() {
     }
   };
 
-  // Manage Users Privileges, Vendor States and Fraud Triggers
+
+
+
+
+
+
   const handleUserUpdate = async (id, updateBody) => {
     try {
       const token = getExpressToken();
@@ -82,12 +94,25 @@ export default function AdminDashboard() {
     }
   };
 
-  // Advertise Ticket Toggles with Toast Enforcements
+
+
+
+
+
+
+
+
   const handleAdvertiseToggle = async (ticketItem) => {
     const totalAdvertised = tickets.filter(t => t.isAdvertised).length;
     const targetState = !ticketItem.isAdvertised;
 
-    // Trigger explicit instructions when hitting operational constraint rules
+    
+
+
+
+
+
+
     if (targetState && totalAdvertised >= 6) {
       alert("🚨 Operational Limit Reached!\nYou cannot broadcast more than 6 tickets simultaneously. Please turn off another broadcast card first to open a premium slot for this one.");
       return;
@@ -119,7 +144,9 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8 min-h-[75vh]">
       
-      {/* Sidebar Navigation */}
+      
+
+
       <aside className="w-full md:w-64 flex flex-col gap-2">
         <Button onClick={() => setActiveTab("profile")} className={`justify-start gap-3 h-12 font-semibold rounded-xl ${activeTab === "profile" ? "bg-blue-600 text-white" : "bg-transparent text-slate-600 hover:bg-slate-100"}`}><User size={18} /> Admin Profile</Button>
         <Button onClick={() => setActiveTab("tickets")} className={`justify-start gap-3 h-12 font-semibold rounded-xl ${activeTab === "tickets" ? "bg-blue-600 text-white" : "bg-transparent text-slate-600 hover:bg-slate-100"}`}><ShieldAlert size={18} /> Manage Tickets</Button>
@@ -127,27 +154,29 @@ export default function AdminDashboard() {
         <Button onClick={() => setActiveTab("advertise")} className={`justify-start gap-3 h-12 font-semibold rounded-xl ${activeTab === "advertise" ? "bg-blue-600 text-white" : "bg-transparent text-slate-600 hover:bg-slate-100"}`}><Radio size={18} /> Advertise Tickets</Button>
       </aside>
 
-      {/* Workspace Area */}
+      
       <main className="flex-1 bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
         
-        {/* a) Admin Profile Display */}
+        
+
+        
         {activeTab === "profile" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800">Admin Account Configuration Data</h2>
             <div className="flex items-center gap-6 p-6 bg-slate-50 border rounded-2xl">
-              <div className="h-20 w-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden border shadow-inner">
-                {session?.user?.image ? <img src={session.user.image} className="w-full h-full object-cover" alt="" /> : <User size={32} />}
+        <div className="h-20 w-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden border shadow-inner">
+             {session?.user?.image ? <img src={session.user.image} className="w-full h-full object-cover" alt="" /> : <User size={32} />}
               </div>
-              <div className="space-y-1">
+           <div className="space-y-1">
                 <p className="text-xl font-bold text-slate-800">{session?.user?.name || "System Controller"}</p>
-                <p className="text-sm text-slate-500 font-medium">Email Context: {session?.user?.email}</p>
-                <span className="inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase bg-red-100 text-red-700">Role Authority: {session?.user?.role || "admin"}</span>
+       <p className="text-sm text-slate-500 font-medium">Email Context: {session?.user?.email}</p>
+        <span className="inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase bg-red-100 text-red-700">Role Authority: {session?.user?.role || "admin"}</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* b) Manage Tickets Table View Layout */}
+       
         {activeTab === "tickets" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800">Platform Transit Ticket Directory</h2>
@@ -158,15 +187,19 @@ export default function AdminDashboard() {
                 <table className="w-full text-left text-sm border-collapse bg-white">
                   <thead>
                     <tr className="bg-slate-50 text-slate-500 font-bold border-b text-xs uppercase tracking-wider">
-                      <th className="p-4">Journey / Route Details</th>
+            <th className="p-4">Journey / Route Details</th>
                       <th className="p-4">Operator Email</th>
                       <th className="p-4">Fare Matrix</th>
-                      <th className="p-4">Status</th>
+           <th className="p-4">Status</th>
                       <th className="p-4 text-center">Moderation Pipeline</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y text-slate-600 font-medium">
-                    {tickets.map(t => {
+                {tickets.map(t => {
+
+
+
+
                       const colors = { pending: "text-amber-600 bg-amber-50", approved: "text-emerald-600 bg-emerald-50", rejected: "text-rose-600 bg-rose-50" };
                       return (
                         <tr key={t._id} className="hover:bg-slate-50/50">
@@ -174,7 +207,7 @@ export default function AdminDashboard() {
                             <p className="font-bold text-slate-800">{t.title}</p>
                             <p className="text-[11px] text-slate-400 font-mono">{t.from} → {t.to} ({t.transportType})</p>
                           </td>
-                          <td className="p-4 text-xs font-mono">{t.vendorEmail}</td>
+                    <td className="p-4 text-xs font-mono">{t.vendorEmail}</td>
                           <td className="p-4">
                             <p className="font-bold text-slate-800">${t.price}</p>
                             <p className="text-[11px] text-slate-400">{t.quantity} available</p>
@@ -198,7 +231,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* c) Manage Users Dynamic Authorization Layout Matrix */}
+       
         {activeTab === "users" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800">Global System Accounts Matrix</h2>
@@ -239,7 +272,7 @@ export default function AdminDashboard() {
                             </Button>
                           )}
                           
-                          {/* CRITICAL MODIFICATION: Only display this if user has requested vendor privileges (vendorVerification === "pending") */}
+                        
                           {u.role === "user" && u.vendorVerification === "pending" && (
                             <Button size="sm" variant="flat" color="primary" onClick={() => handleUserUpdate(u._id, { role: "vendor", vendorVerification: "approved" })} className="font-bold rounded-lg text-xs h-8">
                               Approve Vendor
@@ -266,7 +299,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* d) Advertise Tickets Allocation Slots */}
+       
         {activeTab === "advertise" && (
           <div className="space-y-6">
             <div className="flex justify-between items-center flex-wrap gap-4">
@@ -287,7 +320,7 @@ export default function AdminDashboard() {
                   <thead>
                     <tr className="bg-slate-50 text-slate-500 font-bold border-b text-xs uppercase tracking-wider">
                       <th className="p-4">Ticket Name / Details</th>
-                      <th className="p-4">Base Fair Cost</th>
+                 <th className="p-4">Base Fair Cost</th>
                       <th className="p-4">Transit Modality</th>
                       <th className="p-4 text-center">Broadcast Banner Selector</th>
                     </tr>
