@@ -6,7 +6,6 @@ import { Spinner } from "@heroui/react";
 import { CheckCircle2 } from "lucide-react";
 import axios from "axios";
 
-// 1. Move the state and payment verification logic into an inner sub-component
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -18,12 +17,13 @@ function PaymentSuccessContent() {
     const sessionId = searchParams.get("session_id");
 
     if (!bookingId) {
+      
       setStatusMessage("Invalid parameters. Redirecting back to workspace...");
       setTimeout(() => router.push("/dashboard/user"), 3000);
       return;
     }
 
-    // Strict ref lock prevents React 18 strict mode double-firing API calls
+    
     if (processedRef.current) return;
     processedRef.current = true;
 
@@ -31,10 +31,11 @@ function PaymentSuccessContent() {
       try {
         const token = localStorage.getItem("token") || localStorage.getItem("access_token");
         
-        // 1. Inform your database backend that this specific booking record is now complete and paid
+       
         await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}`, {
           status: "paid",
           transactionId: sessionId || `ch_${Math.random().toString(36).substr(2, 9)}`,
+
           paymentDate: new Date().toISOString()
         }, {
           headers: { Authorization: `Bearer ${token}` }
@@ -42,10 +43,12 @@ function PaymentSuccessContent() {
 
         setStatusMessage("Payment Confirmed! Updating your workspace manifest...");
         
-        // 2. Redirect the user smoothly back to the dashboard workspace page safely
+
         setTimeout(() => {
           router.push("/dashboard/user"); 
         }, 2000);
+
+
 
       } catch (err) {
         console.error("Backend state correction fault:", err);
@@ -60,10 +63,10 @@ function PaymentSuccessContent() {
   return (
     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-md w-full text-center space-y-4">
       <div className="mx-auto w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center">
-        <CheckCircle2 size={40} />
-      </div>
+     <CheckCircle2 size={40} />
+     </div>
       <h1 className="text-xl font-black text-slate-800">Processing Payment</h1>
-      <p className="text-sm font-semibold text-slate-500">{statusMessage}</p>
+   <p className="text-sm font-semibold text-slate-500">{statusMessage}</p>
       <div className="pt-2 flex justify-center">
         <Spinner size="sm" />
       </div>
@@ -71,17 +74,17 @@ function PaymentSuccessContent() {
   );
 }
 
-// 2. Export the main page wrapper cleanly protected inside a Suspense boundary
+
 export default function PaymentSuccessPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
       <Suspense fallback={
         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-md w-full text-center space-y-4">
           <p className="text-sm font-semibold text-slate-500 animate-pulse">
-            Initializing verification engines...
-          </p>
-          <div className="pt-2 flex justify-center">
-            <Spinner size="sm" />
+         Initializing verification engines...
+    </p>
+     <div className="pt-2 flex justify-center">
+       <Spinner size="sm" />
           </div>
         </div>
       }>
