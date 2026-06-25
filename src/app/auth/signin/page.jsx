@@ -7,15 +7,19 @@ import { signIn } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 
-// 1. Move the complete authentication logic and UI layout into a sub-component
+
 function SigninFormContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
+
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
 
   const [isVisible, setIsVisible] = useState(false);
+
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,6 +35,9 @@ function SigninFormContent() {
         email: email.trim(),
         password: password,
       }, {
+
+
+
         onRequest: () => {
           setIsLoading(true);
         },
@@ -41,15 +48,25 @@ function SigninFormContent() {
             let finalRole = user.role; // Fallback
 
             try {
-              // Send the email to backend to get a fresh token based on DB records
+
+
+
+
+
+              
               const jwtResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/jwt`, {
                 email: user.email,
               });
 
               if (jwtResponse.data?.token) {
                 localStorage.setItem("token", jwtResponse.data.token);
+
+
+
+
+
                 localStorage.setItem("access_token", jwtResponse.data.token);
-                // Capture the true role verified by MongoDB
+                
                 finalRole = jwtResponse.data.role; 
               }
             } catch (jwtErr) {
@@ -58,11 +75,19 @@ function SigninFormContent() {
 
             setIsLoading(false);
 
-            // Dynamic routing based on the fresh DB role
+       
+            
             if (finalRole === "admin") {
               router.push("/dashboard/admin");
+
+
+
+
+
+
             } else if (finalRole === "vendor") {
-              router.push("/dashboard/vendor"); // Sends them straight to vendor dashboard!
+              router.push("/dashboard/vendor"); 
+              
             } else {
               router.push(redirectTo);
             }
@@ -72,10 +97,16 @@ function SigninFormContent() {
         },
         onError: (ctx) => {
           setIsLoading(false);
+
+
+
           setError(ctx.error?.message || "Invalid credentials.");
         }
       });
     } catch (err) {
+
+
+
       setError("A critical communication error occurred.");
       setIsLoading(false);
     }
@@ -93,20 +124,33 @@ function SigninFormContent() {
     <Card className="w-full max-w-md p-8 shadow-lg border border-blue-100 rounded-2xl bg-white">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-slate-800">Welcome Back</h1>
+
+
+
+
         <p className="text-sm text-slate-500 mt-2">Log in to manage your tickets.</p>
       </div>
 
       <form onSubmit={handleSignin} className="flex flex-col gap-5">
         
-        {/* Native HTML compatible Email wrapping to eliminate DOM prop errors */}
+       
+       
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-700">Email Address</label>
+
+
+
+
           <div className="relative flex items-center bg-slate-50 border border-slate-200 focus-within:border-blue-500 transition rounded-xl h-12 px-3">
             <At className="text-slate-400 shrink-0 mr-2" size={16} />
             <input
               required
               type="email"
               placeholder="hello@ticketbari.com"
+
+
+
+
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none"
@@ -114,9 +158,13 @@ function SigninFormContent() {
           </div>
         </div>
 
-        {/* Native HTML compatible Password wrapping to eliminate DOM prop errors */}
+       
+       
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-700">Password</label>
+
+
+
           <div className="relative flex items-center bg-slate-50 border border-slate-200 focus-within:border-blue-500 transition rounded-xl h-12 px-3">
             <ShieldKeyhole className="text-slate-400 shrink-0 mr-2" size={16} />
             <input
@@ -128,6 +176,8 @@ function SigninFormContent() {
               className="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none pr-8"
             />
             <button 
+
+
               type="button" 
               onClick={toggleVisibility} 
               className="absolute right-3 text-slate-400 hover:text-blue-500 focus:outline-none"
@@ -160,6 +210,9 @@ function SigninFormContent() {
       </Button> */}
 
       <div className="text-center pt-6 text-sm text-slate-500">
+
+
+
         New to TicketBari?{" "}
         <Link href="/auth/signup" className="text-blue-600 font-semibold hover:underline">
           Create an account
@@ -169,12 +222,21 @@ function SigninFormContent() {
   );
 }
 
-// 2. Export the primary page component wrapped safely inside a Suspense boundary
+
+
 export default function SigninPage() {
   return (
+
+
+
+
     <div className="flex min-h-screen items-center justify-center bg-blue-50/50 px-4">
       <Suspense fallback={
+
+
         <div className="text-center text-slate-600 font-medium animate-pulse">
+
+          
           Loading auth engine components...
         </div>
       }>
